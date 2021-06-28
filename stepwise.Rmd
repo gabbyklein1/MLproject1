@@ -1,0 +1,148 @@
+---
+title: "Stepwise"
+output: html_notebook
+---
+
+Stepwise feature selection 
+```{r}
+library(MASS)
+library(car)
+
+library(ggplot2)
+library(ggvenn)
+```
+```{r}
+housingdata=read.csv("initial_dummied_data_TRAIN.csv")
+housingdatatest=read.csv("initial_dummied_data_TEST.csv")
+```
+
+
+
+using BIC as its better for selecting simpler model due to higher penalty 
+```{r}
+n=nrow(housingdata)
+
+model_empty = lm(SalePrice ~ 1, data = housingdata) #Null model.
+model_full = lm(SalePrice ~ ., data = housingdata) #full model.
+scope = list(lower = formula(model_empty), upper = formula(model_full))
+
+
+
+forwardBIC = step(model_empty, scope, direction = "forward",  k = log(n),trace=0)
+backwardBIC = step(model_full, scope, direction = "backward",  k = log(n),trace=0)
+bothBIC = step(model_empty, scope, direction = "both",  k = log(n),trace=0)
+
+```
+
+
+forwardBIC feature selection:
+```{r}
+sig_attributesforwardBIC=sort(summary(forwardBIC)$coefficients[-1,4],decreasing = TRUE)
+PvalsforwardBIC=as.numeric((sig_attributesforwardBIC))
+CoeffsforwardBIC=names(sig_attributesforwardBIC)
+sig_attributesforwardBIC=as.data.frame(do.call(cbind,list(Co = CoeffsforwardBIC, P = PvalsforwardBIC)))
+sig_attributesforwardBIC$P=1-as.numeric(sig_attributesforwardBIC$P)
+
+sig_attributesforwardBIC$Co <- factor(sig_attributesforwardBIC$Co,levels = CoeffsforwardBIC)
+ggplot(sig_attributesforwardBIC,aes(x = Co, y = P)) +
+         geom_bar(stat = "identity") +coord_flip(ylim=c(.99,1))+ylab('1-Pval (Closer to 1= more sig)')+xlab('Attribute')+ggtitle('ForwardBIC Selected Attributes')
+cat("Deems ",length(CoeffsforwardBIC)," attributes to be important" )
+```
+backwardBIC
+```{r}
+sig_attributesbackwardBIC=sort(summary(backwardBIC)$coefficients[-1,4],decreasing = TRUE)
+PvalsbackwardBIC=as.numeric((sig_attributesbackwardBIC))
+CoeffsbackwardBIC=names(sig_attributesbackwardBIC)
+sig_attributesbackwardBIC=as.data.frame(do.call(cbind,list(Co = CoeffsbackwardBIC, P = PvalsbackwardBIC)))
+sig_attributesbackwardBIC$P=1-as.numeric(sig_attributesbackwardBIC$P)
+
+sig_attributesbackwardBIC$Co <- factor(sig_attributesbackwardBIC$Co,levels = CoeffsbackwardBIC)
+ggplot(sig_attributesbackwardBIC,aes(x = Co, y = P)) +
+         geom_bar(stat = "identity") +coord_flip(ylim=c(.99,1))+ylab('1-Pval (Closer to 1= more sig)')+xlab('Attribute')+ggtitle('BackwardBIC Selected Attributes')
+
+cat("Deems ",length(CoeffsbackwardBIC)," attributes to be important" )
+```
+bothBIC feature selection:
+```{r}
+sig_attributesbothBIC=sort(summary(bothBIC)$coefficients[-1,4],decreasing = TRUE)
+PvalsbothBIC=as.numeric((sig_attributesbothBIC))
+CoeffsbothBIC=names(sig_attributesbothBIC)
+sig_attributesbothBIC=as.data.frame(do.call(cbind,list(Co = CoeffsbothBIC, P = PvalsbothBIC)))
+sig_attributesbothBIC$P=1-as.numeric(sig_attributesbothBIC$P)
+
+sig_attributesbothBIC$Co <- factor(sig_attributesbothBIC$Co,levels = CoeffsbothBIC)
+ggplot(sig_attributesbothBIC,aes(x = Co, y = P)) +
+         geom_bar(stat = "identity") +coord_flip(ylim=c(.99,1))+ylab('1-Pval (Closer to 1= more sig)')+xlab('Attribute')+ggtitle('bothBIC Selected Attributes')
+cat("Deems ",length(CoeffsbothBIC)," attributes to be important" )
+```
+
+What features are in  all models?
+
+```{r}
+x= list(both=CoeffsbothBIC,forward= CoeffsforwardBIC,backward=CoeffsbackwardBIC )
+
+ggvenn(
+  x,
+  fill_color = c("#0073C2FF", "#EFC000FF", "#868686FF", "#CD534CFF"),
+  stroke_size = 0.5, set_name_size = 4,text_size = 4,show_percentage = FALSE
+  )+ggtitle('Attributes in each model')
+
+```
+```{r}
+
+cat('The 24 in all \n')
+intersect(intersect(CoeffsbothBIC,CoeffsforwardBIC),CoeffsbackwardBIC)
+cat('\n\nThe 11 in backward alone \n')
+setdiff(CoeffsbackwardBIC, union(CoeffsbothBIC,CoeffsforwardBIC))
+cat('\n\nThe 1 in forward alone \n')
+setdiff(CoeffsforwardBIC, union(CoeffsbothBIC,CoeffsbackwardBIC))
+
+cat('\n\nThe both model \n')
+CoeffsbothBIC
+
+```
+
+
+```{r}
+#union(union(CoeffsbothBIC,CoeffsforwardBIC),CoeffsbackwardBIC)
+#append(append(CoeffsbothBIC,CoeffsforwardBIC),CoeffsbackwardBIC)
+coefcounts=table(append(append(CoeffsbothBIC,CoeffsforwardBIC),CoeffsbackwardBIC))
+coefcountsdf=as.data.frame(do.call(cbind,list(Names = names(coefcounts), Count = as.numeric(coefcounts))))
+coefcountsdf=coefcountsdf[order(coefcountsdf$Count),c(1,2)]
+
+coefcountsdf$Names <- factor(coefcountsdf$Names,levels = coefcountsdf$Names)
+
+ggplot(coefcountsdf,aes(x = Names, y = Count)) +
+         geom_bar(stat = "identity") +coord_flip()+ylab('# models it appears in')+xlab('Attribute')+ggtitle('Attributes in Fwd, Bkwd and Both Models')+ theme(axis.text.y= element_text(size=8))
+```
+
+pro of both model-no troubling vifs
+```{r}
+sort(vif(forwardBIC),decreasing = TRUE)[sort(vif(forwardBIC),decreasing = TRUE)>7]
+sort(vif(backwardBIC),decreasing = TRUE)[sort(vif(backwardBIC),decreasing = TRUE)>7]
+sort(vif(bothBIC),decreasing = TRUE)[sort(vif(bothBIC),decreasing = TRUE)>7]
+
+```
+
+
+Examing the BothBIC model test and train r2s 
+```{r}
+model_both = lm(SalePrice ~ LotConfig_CulDSac+ExterQual_Gd+Neighborhood_IDOTRR+Condition1_Artery+BsmtQual_Gd +HeatingQC_TA+MSSubClass_multi_fam+BsmtFinGdLvng+BedroomAbvGr +Neighborhood_NoRidge+RemodelYrsAftBuilt   +MasVnrType_BrkFace+BldgType_TwnhsE +MasVnrArea+Functional_Min+BldgType_Twnhs+Functional_Maj+BsmtQual_Ex          +BsmtExposure +Exterior1st_BrkFace+OverallCondBinary+YearBuilt+TotalBsmtSF+BsmtUnfSF+ExterQual_Ex+OverallQual      +GrLivArea+LndAc_S, data = housingdata)
+
+(summary(model_both))
+
+predictedsaleprices=predict(model_both, housingdatatest)
+ypredictyactual=data.frame( housingdatatest$SalePrice,predictedsaleprices)
+ggplot(ypredictyactual, aes(x=housingdatatest$SalePrice, y=predictedsaleprices)) +
+  geom_point(size=2, shape=23)+ylab('Predicted SalePrice')+xlab('Actual Sale Price')+ggtitle('Predicted vs Actual Sale Price BothBIC Model')
+
+
+
+#get test r2 val 
+RSQUARE = function(y_actual,y_predict){
+  cor(y_actual,y_predict)^2
+}
+#RSQUARE(housingdatatest$SalePrice, predictedsaleprices)
+
+cat('Test R2 is ',RSQUARE(housingdatatest$SalePrice, predictedsaleprices))
+```
