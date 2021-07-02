@@ -12,8 +12,8 @@ library(ggplot2)
 library(ggvenn)
 ```
 ```{r}
-housingdata=read.csv("initial_dummied_data_TRAIN.csv")
-housingdatatest=read.csv("initial_dummied_data_TEST.csv")
+housingdata=read.csv("RowFiltered_dummied_data_TRAIN.csv")
+housingdatatest=read.csv("RowFiltered_dummied_data_TEST.csv")
 ```
 
 
@@ -118,16 +118,16 @@ ggplot(coefcountsdf,aes(x = Names, y = Count)) +
 
 pro of both model-no troubling vifs
 ```{r}
-sort(vif(forwardBIC),decreasing = TRUE)[sort(vif(forwardBIC),decreasing = TRUE)>7]
-sort(vif(backwardBIC),decreasing = TRUE)[sort(vif(backwardBIC),decreasing = TRUE)>7]
-sort(vif(bothBIC),decreasing = TRUE)[sort(vif(bothBIC),decreasing = TRUE)>7]
+sort(vif(forwardBIC),decreasing = TRUE)[sort(vif(forwardBIC),decreasing = TRUE)>5]
+sort(vif(backwardBIC),decreasing = TRUE)[sort(vif(backwardBIC),decreasing = TRUE)>5]
+sort(vif(bothBIC),decreasing = TRUE)[sort(vif(bothBIC),decreasing = TRUE)>5]
 
 ```
 
 
 Examing the BothBIC model test and train r2s 
 ```{r}
-model_both = lm(SalePrice ~ LotConfig_CulDSac+ExterQual_Gd+Neighborhood_IDOTRR+Condition1_Artery+BsmtQual_Gd +HeatingQC_TA+MSSubClass_multi_fam+BsmtFinGdLvng+BedroomAbvGr +Neighborhood_NoRidge+RemodelYrsAftBuilt   +MasVnrType_BrkFace+BldgType_TwnhsE +MasVnrArea+Functional_Min+BldgType_Twnhs+Functional_Maj+BsmtQual_Ex          +BsmtExposure +Exterior1st_BrkFace+OverallCondBinary+YearBuilt+TotalBsmtSF+BsmtUnfSF+ExterQual_Ex+OverallQual      +GrLivArea+LndAc_S, data = housingdata)
+model_both = lm(SalePrice ~ MasVnrType_BrkFace+Foundation_Stone+Exterior1st_AsbShng+LotArea+Fireplaces+HeatingQC_TA+Exterior1st_BrkFace+Foundation_Wood+Condition1_Artery+BsmtFinGdLvng+Functional_Min+Neighborhood_NoRidge+ExterQual_Gd+BsmtExposure+KitchenQual_Ex+BsmtQual_Ex+Functional_Maj+OverallCondBinary+OverallQual+ExterQual_Ex+TotalBsmtSF+BsmtUnfSF+GrLivArea+LndAc_S, data = housingdata)
 
 (summary(model_both))
 
