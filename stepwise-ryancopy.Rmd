@@ -1,0 +1,319 @@
+---
+title: "Stepwise"
+output: html_notebook
+---
+
+Note: There is a lot going on in this notebook. But, basically we (1) build/test stepwise selected models, and (2) Investigate the model we chose, stepwise both BIC. 
+
+
+Stepwise feature selection 
+```{r}
+library(MASS)
+library(car)
+library(dplyr)
+library(ggplot2)
+library(ggvenn)
+```
+```{r}
+housingdata=read.csv("RowFiltered_dummied_data_TRAIN.csv")
+# deleting lat/long column, not sure why I am getting AIC=-infinity error during stepwise, but might be this column.
+housingdata = subset(housingdata, select=-c(Lat_Long))
+housingdatatest=read.csv("RowFiltered_dummied_data_TEST.csv")
+# deleting lat/long column, not sure why I am getting AIC=-infinity error during stepwise, but might be this column.
+housingdatatest = subset(housingdatatest, select=-c(Lat_Long))
+```
+
+
+
+using BIC as its better for selecting simpler model due to higher penalty 
+```{r}
+n=nrow(housingdata)
+
+model_empty = lm(SalePrice ~ 1, data = housingdata) #Null model.
+model_full = lm(SalePrice ~ ., data = housingdata) #full model.
+scope = list(lower = formula(model_empty), upper = formula(model_full))
+
+
+
+forwardBIC = step(model_empty, scope, direction = "forward",  k = log(n),trace=0)
+backwardBIC = step(model_full, scope, direction = "backward",  k = log(n),trace=0)
+bothBIC = step(model_empty, scope, direction = "both",  k = log(n),trace=0)
+
+```
+
+
+forwardBIC feature selection:
+```{r}
+sig_attributesforwardBIC=sort(summary(forwardBIC)$coefficients[-1,4],decreasing = TRUE)
+PvalsforwardBIC=as.numeric((sig_attributesforwardBIC))
+CoeffsforwardBIC=names(sig_attributesforwardBIC)
+sig_attributesforwardBIC=as.data.frame(do.call(cbind,list(Co = CoeffsforwardBIC, P = PvalsforwardBIC)))
+sig_attributesforwardBIC$P=1-as.numeric(sig_attributesforwardBIC$P)
+
+sig_attributesforwardBIC$Co <- factor(sig_attributesforwardBIC$Co,levels = CoeffsforwardBIC)
+ggplot(sig_attributesforwardBIC,aes(x = Co, y = P)) +
+         geom_bar(stat = "identity") +coord_flip(ylim=c(.99,1))+ylab('1-Pval (Closer to 1= more sig)')+xlab('Attribute')+ggtitle('ForwardBIC Selected Attributes')
+cat("Deems ",length(CoeffsforwardBIC)," attributes to be important" )
+```
+backwardBIC
+```{r}
+sig_attributesbackwardBIC=sort(summary(backwardBIC)$coefficients[-1,4],decreasing = TRUE)
+PvalsbackwardBIC=as.numeric((sig_attributesbackwardBIC))
+CoeffsbackwardBIC=names(sig_attributesbackwardBIC)
+sig_attributesbackwardBIC=as.data.frame(do.call(cbind,list(Co = CoeffsbackwardBIC, P = PvalsbackwardBIC)))
+sig_attributesbackwardBIC$P=1-as.numeric(sig_attributesbackwardBIC$P)
+
+sig_attributesbackwardBIC$Co <- factor(sig_attributesbackwardBIC$Co,levels = CoeffsbackwardBIC)
+ggplot(sig_attributesbackwardBIC,aes(x = Co, y = P)) +
+         geom_bar(stat = "identity") +coord_flip(ylim=c(.99,1))+ylab('1-Pval (Closer to 1= more sig)')+xlab('Attribute')+ggtitle('BackwardBIC Selected Attributes')
+
+cat("Deems ",length(CoeffsbackwardBIC)," attributes to be important" )
+```
+bothBIC feature selection:
+```{r}
+sig_attributesbothBIC=sort(summary(bothBIC)$coefficients[-1,4],decreasing = TRUE)
+PvalsbothBIC=as.numeric((sig_attributesbothBIC))
+CoeffsbothBIC=names(sig_attributesbothBIC)
+sig_attributesbothBIC=as.data.frame(do.call(cbind,list(Co = CoeffsbothBIC, P = PvalsbothBIC)))
+sig_attributesbothBIC$P=1-as.numeric(sig_attributesbothBIC$P)
+
+sig_attributesbothBIC$Co <- factor(sig_attributesbothBIC$Co,levels = CoeffsbothBIC)
+ggplot(sig_attributesbothBIC,aes(x = Co, y = P)) +
+         geom_bar(stat = "identity") +coord_flip(ylim=c(.99,1))+ylab('1-Pval (Closer to 1= more sig)')+xlab('Attribute')+ggtitle('bothBIC Selected Attributes')
+cat("Deems ",length(CoeffsbothBIC)," attributes to be important" )
+```
+
+What features are in  all models?
+
+```{r}
+x= list(both=CoeffsbothBIC,forward= CoeffsforwardBIC,backward=CoeffsbackwardBIC )
+
+ggvenn(
+  x,
+  fill_color = c("#0073C2FF", "#EFC000FF", "#868686FF", "#CD534CFF"),
+  stroke_size = 0.5, set_name_size = 4,text_size = 4,show_percentage = FALSE
+  )+ggtitle('Attributes in each model')
+
+```
+```{r}
+
+cat('The 30 in all \n')
+intersect(intersect(CoeffsbothBIC,CoeffsforwardBIC),CoeffsbackwardBIC)
+cat('\n\nThe 4 in backward alone \n')
+setdiff(CoeffsbackwardBIC, union(CoeffsbothBIC,CoeffsforwardBIC))
+cat('\n\nThe 2 in forward alone \n')
+setdiff(CoeffsforwardBIC, union(CoeffsbothBIC,CoeffsbackwardBIC))
+
+cat('\n\nThe both model \n')
+CoeffsbothBIC
+
+```
+
+
+```{r}
+#union(union(CoeffsbothBIC,CoeffsforwardBIC),CoeffsbackwardBIC)
+#append(append(CoeffsbothBIC,CoeffsforwardBIC),CoeffsbackwardBIC)
+coefcounts=table(append(append(CoeffsbothBIC,CoeffsforwardBIC),CoeffsbackwardBIC))
+coefcountsdf=as.data.frame(do.call(cbind,list(Names = names(coefcounts), Count = as.numeric(coefcounts))))
+coefcountsdf=coefcountsdf[order(coefcountsdf$Count),c(1,2)]
+
+coefcountsdf$Names <- factor(coefcountsdf$Names,levels = coefcountsdf$Names)
+
+ggplot(coefcountsdf,aes(x = Names, y = Count)) +
+         geom_bar(stat = "identity") +coord_flip()+ylab('# models it appears in')+xlab('Attribute')+ggtitle('Attributes in Fwd, Bkwd and Both Models')+ theme(axis.text.y= element_text(size=8))
+```
+
+pro of both model-no troubling vifs
+```{r}
+sort(vif(forwardBIC),decreasing = TRUE)[sort(vif(forwardBIC),decreasing = TRUE)>5]
+sort(vif(backwardBIC),decreasing = TRUE)[sort(vif(backwardBIC),decreasing = TRUE)>5]
+sort(vif(bothBIC),decreasing = TRUE)[sort(vif(bothBIC),decreasing = TRUE)>5]
+
+```
+
+#Note: I (Ryan) added this section in here to make model evaluation easier.
+```{r}
+#Getting BIC  columns into form for the model input:
+housingdata_stepwise_data = subset(housingdata, select=c('SalePrice', CoeffsbothBIC))
+housingdata_stepwise_data
+```
+
+
+Examing the BothBIC model test and train r2s 
+```{r}
+model_both = lm(SalePrice ~ ., data = housingdata_stepwise_data)
+
+(summary(model_both))
+
+predictedsaleprices=predict(model_both, housingdatatest)
+ypredictyactual=data.frame( housingdatatest$SalePrice,predictedsaleprices)
+ggplot(ypredictyactual, aes(x=housingdatatest$SalePrice, y=predictedsaleprices)) +
+  geom_point(size=2, shape=23)+ylab('Predicted SalePrice')+xlab('Actual Sale Price')+ggtitle('Predicted vs Actual Sale Price BothBIC Model')
+
+
+
+#get test r2 val 
+RSQUARE = function(y_actual,y_predict){
+  cor(y_actual,y_predict)^2
+}
+#RSQUARE(housingdatatest$SalePrice, predictedsaleprices)
+
+cat('Test R2 is ',RSQUARE(housingdatatest$SalePrice, predictedsaleprices))
+```
+
+
+
+==================================
+FROM HERE ON DOWN IS NEW FROM RYAN
+==================================
+
+The Both model looks pretty good. Lets see how many houses the categorical features in our model affect.
+```{r}
+for (i in 1:length(CoeffsbothBIC)) {
+  if (length((housingdata_stepwise_data %>% count(housingdata_stepwise_data[i]))[[1]]) == 2) {
+    print(housingdata_stepwise_data %>% count(housingdata_stepwise_data[i], sort=TRUE))
+  }
+}
+
+```
+THE BELOW COLUMNS ARE THE ONES THAT AFFECT FEW HOUSES:
+Exterior1st_AsbShng - 17
+Foundation_Wood - 2
+BsmtQual_None - 27
+Exterior1st_BrkFace - 39
+BldgType_Twnhs - 51
+Condition1_Artery - 36
+Functional_Maj - 24
+OverallCondBinary - 49
+Neighborhood.Cluster.Label_3 - 43
+ExterQual_Ex - 36 
+
+
+Lets See which variables are included, and which are left out:
+```{r}
+cat('Cols in model:\n')
+CoeffsbothBIC
+```
+```{r}
+cat('Cols not in model:\n')
+setdiff(colnames(housingdata), CoeffsbothBIC)
+```
+
+I am a bit surprised that there is no information in the model on the electrical, number of stories, proximity to railroad or park, central air, deck, or the other neighborhood clusters. 
+
+
+
+```{r}
+sort(vif(model_both), decreasing=TRUE)
+```
+
+```{r}
+# Lets get the feature importance:
+stepwise_data_std = as.data.frame(scale(subset(housingdata, select=CoeffsbothBIC)))
+stepwise_data_std$SalePrice = housingdata$SalePrice
+model_both_std = lm(SalePrice ~ ., data = stepwise_data_std)
+
+(summary(model_both_std))
+
+predictedsaleprices_std=predict(model_both_std, housingdatatest)
+ypredictyactual=data.frame( housingdatatest$SalePrice,predictedsaleprices)
+ggplot(ypredictyactual, aes(x=housingdatatest$SalePrice, y=predictedsaleprices)) +
+  geom_point(size=2, shape=23)+ylab('Predicted SalePrice')+xlab('Actual Sale Price')+ggtitle('Predicted vs Actual Sale Price BothBIC Model')
+
+
+
+#get test r2 val 
+RSQUARE = function(y_actual,y_predict){
+  cor(y_actual,y_predict)^2
+}
+#RSQUARE(housingdatatest$SalePrice, predictedsaleprices)
+
+# cat('Test R2 is ',RSQUARE(housingdatatest$SalePrice, predictedsaleprices_std))
+# This formula is incorrect for standardized version, just fyi
+```
+Below is the feature importance for our model. 
+```{r}
+as.data.frame((summary(model_both_std))[[4]]) %>% select(Estimate) %>% arrange(desc(abs(Estimate)))
+```
+
+Testing what happens to our model if we add full bath count to the model, that seems important for home value a priori.
+```{r}
+stepwise_BATH_data = subset(housingdata, select=c('SalePrice', 'FullBath', CoeffsbothBIC))
+model_BATH = lm(SalePrice ~ ., data = stepwise_BATH_data)
+
+(summary(model_BATH))
+```
+```{r}
+sort(vif(model_BATH), decreasing=TRUE)
+```
+FullBath adds almost nothing to the predictive power of the model, and increases the VIF for already troubling largest variables. 
+
+Lets see how the bothBIC stepwise model that we are interested in using satisfies the conditions of linear regression:
+```{r}
+plot(model_both)
+```
+
+Lets run a linear regrerssion on the full model to see what its like, and do a partial f-test on our reduced model.
+```{r}
+drop_cols = 
+full_housing_data = subset(housingdata, select=-c(BsmtCond_None, GarageFinish_None))
+model_full = lm(SalePrice ~ ., data = full_housing_data)
+summary(model_full)
+
+
+```
+```{r}
+predict_y_full = predict(model_full, housingdatatest)
+ypredictyactual=data.frame( housingdatatest$SalePrice,predict_y_full)
+cor(ypredictyactual[1], ypredictyactual[2])^2
+```
+Surprisingly, the unedited model actually works fairly well on the test set. 
+
+```{r}
+sort(vif(model_full), decreasing=TRUE)
+```
+As can be seen, there are huge multicollinearity issues with the full model.
+
+Interestingly, F-stat for the simplified model is in the 500's and f-stat for the full model is in the 200's. This means it is a much beter model, loses only a little info in exhcange for cutting lots of features.
+
+Partial F-test:
+```{r}
+anova(model_both, model_full)
+```
+Strange. The P-value is suoper small, showing these models are very different and some of the dropped variables have coefficients significantly different than zero. 
+
+```{r}
+BIC(model_both, model_full)
+```
+```{r}
+AIC(model_both, model_full)
+```
+
+I'm pretty surprised the information coefficients are so similar for the models even though they are so different. 
+
+
+
+=============================================
+Honestly, I don't have many takeaways about the reduced model after all this. Wish I had more to say about it. Plenty to use in a presentation, but not much from an implementation standpoint.
+=============================================
+
+
+
+
+
+
+
+Just for fun, lets see how accurate a model with only sqft, overall quality, and year built is. 
+```{r}
+model_simple = lm(SalePrice ~ GrLivArea+OverallQual+YearBuilt, data=housingdata)
+summary(model_simple)
+```
+```{r}
+predict_y_simple = predict(model_simple, housingdatatest)
+ypredictyactual=data.frame( housingdatatest$SalePrice,predict_y_simple)
+cor(ypredictyactual[1], ypredictyactual[2])^2
+```
+```{r}
+sort(vif(model_simple), decreasing=TRUE)
+```
+

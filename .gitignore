@@ -134,3 +134,7 @@ dmypy.json
 # Data Files
 *.csv
 *.json
+
+# R random files
+.Rhistory
+*.nb.html
