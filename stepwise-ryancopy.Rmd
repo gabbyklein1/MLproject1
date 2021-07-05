@@ -161,6 +161,19 @@ RSQUARE = function(y_actual,y_predict){
 cat('Test R2 is ',RSQUARE(housingdatatest$SalePrice, predictedsaleprices))
 ```
 
+******
+Add section here for exporting coefs to python
+******
+```{r}
+# Get a dataframe of feature names and coefficients
+modelboth_coefs = as.data.frame((summary(model_both)[[4]])[,1])
+write.csv(modelboth_coefs, 'stepwise_R_coefs.csv')
+
+```
+
+
+
+
 
 
 ==================================
