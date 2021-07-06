@@ -19,6 +19,12 @@ def display_page(pathname):
         return app1.layout
     elif pathname == '/apps/app2':
         return app2.layout
+    elif pathname == '/apps/app2':
+        return app3.layout
+    elif pathname == '/apps/app2':
+        return app4.layout
+    elif pathname == '/apps/app2':
+        return app5.layout            
     else:
         return '404'
 
