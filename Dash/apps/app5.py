@@ -1,10 +1,12 @@
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-from dash.dependencies import Input, Output
 import pandas as pd
-from app import app
+from dash.dependencies import Input, Output
+
 import dash_table
+
+from app import app
 
 future_work = '''
 Placeholder for the long talk on future work for this project. Should be a considerable amount of text.
@@ -15,9 +17,9 @@ Placeholder for the long text of the data dictionary. This will be a reaaaally l
 format it as one big text chunk using markdown.
 '''
 
-df1 = pd.read_csv('merge_data_update.csv')
+df1 = pd.read_csv('merge_data_update.csv', index_col=0)
 
-#df2 = pd.read_csv('')
+df2 = pd.read_csv('RowFiltered_condensed_data_TRAIN.csv', index_col=0)
 
 
 SIDEBAR_STYLE = {"position": "fixed", "top": 0, "left": 0,"bottom": 0,
@@ -69,22 +71,43 @@ tab2_content = dbc.Card(
 
 
 tab3_content = dbc.Card(
-    dbc.CardBody(
-        [
-            html.H2('Merged Data Set', style={'textAlighn': 'center'}),
+    dbc.CardBody([
+
+            html.H2('Original Data Set', style={'textAlighn': 'center'}),
         dash_table.DataTable(
-            id='Merged Data Set',
-            columns=[{'name': i, 'id': i} for i in df1.columns]
-            ]
+            id='Original Data Set',
+            columns=[{'name': i, 'id': i} for i in df1.columns],
+            data=df1.to_dict('records'),
+            page_action='none',
+            style_table={'height': '300px', 'overflowY': 'auto'}
+
         )
-    )
+    ]), style=CONTENT_STYLE
+)
+
+
+
+tab4_content = dbc.Card(
+    dbc.CardBody([
+
+            html.H2('Transformed Data Train Set', style={'textAlighn': 'center'}),
+        dash_table.DataTable(
+            id='Transformed Data Train Set',
+            columns=[{'name': i, 'id': i} for i in df2.columns],
+            data=df2.to_dict('records'),
+            page_action='none',
+            style_table={'height': '300px', 'overflowY': 'auto'}
+
+        )
+    ]), style=CONTENT_STYLE
 )
 
 tabs = dbc.Tabs(
     [
         dbc.Tab(tab1_content, label="Future Work"),
         dbc.Tab(tab2_content, label="Data Dictionary"),
-        dbc.Tab(tab3_content, label="Merged Data Set")
+        dbc.Tab(tab3_content, label="Original Data Set"),
+        dbc.Tab(tab4_content, label='Transformed Data Set')
     ], style=CONTENT_STYLE
 )
 
