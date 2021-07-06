@@ -1,20 +1,23 @@
-import dash_core_components as dcc
 import dash_bootstrap_components as dbc
+import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-
+import pandas as pd
 from app import app
-
+import dash_table
 
 future_work = '''
 Placeholder for the long talk on future work for this project. Should be a considerable amount of text.
 '''
 
 data_dictionary = '''
-Placeholder for the long text of the data dictionary. This will be a reaaaally long one, and I should learn how to format it as one big text chunk using markdown.
+Placeholder for the long text of the data dictionary. This will be a reaaaally long one, and I should learn how to 
+format it as one big text chunk using markdown.
 '''
 
+df1 = pd.read_csv('merge_data_update.csv')
 
+#df2 = pd.read_csv('')
 
 
 SIDEBAR_STYLE = {"position": "fixed", "top": 0, "left": 0,"bottom": 0,
@@ -39,14 +42,21 @@ sidebar = html.Div([
     style=SIDEBAR_STYLE,
 )
 
-
-
-
-tab1_content = html.Div([
-    html.H2('Future Work', style={'textAlign': 'center'}),
-    dcc.Markdown(future_work)
-], style=CONTENT_STYLE
+tab1_content = dbc.Card(
+    dbc.CardBody(
+        [
+            html.H2('Future Work', style={'textAlign': 'center'}),
+            dcc.Markdown(future_work)
+        ]
+    ), style=CONTENT_STYLE
 )
+
+
+#tab1_content = html.Div([
+#    html.H2('Future Work', style={'textAlign': 'center'}),
+#    dcc.Markdown(future_work)
+#], style=CONTENT_STYLE
+#)
 
 tab2_content = dbc.Card(
     dbc.CardBody(
@@ -58,10 +68,23 @@ tab2_content = dbc.Card(
 )
 
 
+tab3_content = dbc.Card(
+    dbc.CardBody(
+        [
+            html.H2('Merged Data Set', style={'textAlighn': 'center'}),
+        dash_table.DataTable(
+            id='Merged Data Set',
+            columns=[{'name': i, 'id': i} for i in df1.columns]
+            ]
+        )
+    )
+)
+
 tabs = dbc.Tabs(
     [
         dbc.Tab(tab1_content, label="Future Work"),
-        dbc.Tab(tab2_content, label="Data Dictionary")
+        dbc.Tab(tab2_content, label="Data Dictionary"),
+        dbc.Tab(tab3_content, label="Merged Data Set")
     ], style=CONTENT_STYLE
 )
 
@@ -77,38 +100,3 @@ layout = html.Div([sidebar, tabs])
     Input('app-5-dropdown', 'value'))
 def display_value(value):
     return 'You have selected "{}"'.format(value)
-
-
-
-
-
-tab1_content = dbc.Card(
-dbc.CardBody(
-    [
-        html.P("This is tab 1!", className="card-text"),
-        dbc.Button("Click here", color="success"),
-    ]
-),
-className="mt-3",
-)
-
-tab2_content = dbc.Card(
-    dbc.CardBody(
-        [
-            html.P("This is tab 2!", className="card-text"),
-            dbc.Button("Don't click here", color="danger"),
-        ]
-    ),
-    className="mt-3",
-)
-
-
-tabs = dbc.Tabs(
-    [
-        dbc.Tab(tab1_content, label="Tab 1"),
-        dbc.Tab(tab2_content, label="Tab 2"),
-        dbc.Tab(
-            "This tab's content is never seen", label="Tab 3", disabled=True
-        ),
-    ]
-)
