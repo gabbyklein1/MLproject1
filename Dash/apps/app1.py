@@ -19,7 +19,7 @@ Blah bah blah blah blah I don't have an NYCDSA Author Bio yet.
 '''
 
 jude_bio = '''
-Data Science Fellow at NYC Data Science Academy Drexel University Alumnus.
+Data Science Fellow at NYC Data Science Academy, Drexel University Alumnus.
 '''
 
 ryan_bio = '''
@@ -45,7 +45,7 @@ dictionary for reference.
 
 
 SIDEBAR_STYLE = {"position": "fixed", "top": 0, "left": 0,"bottom": 0,
-    "width": "16rem", "padding": "2rem 1rem","background-color": "#f8f9fa",}
+    "width": "16rem", "padding": "2rem 1rem"} #"background-color": "#f8f9fa",
 
 
 CONTENT_STYLE = {"margin-left": "18rem", "margin-right": "2rem", "padding": "2rem 1rem",}
@@ -115,8 +115,8 @@ layout = html.Div([sidebar, content])
 
 
 
-@app.callback(
-    Output('app-1-display-value', 'children'),
-    Input('app-1-dropdown', 'value'))
-def display_value(value):
-    return 'You have selected "{}"'.format(value)
+# @app.callback(
+#     Output('app-1-display-value', 'children'),
+#     Input('app-1-dropdown', 'value'))
+# def display_value(value):
+#     return 'You have selected "{}"'.format(value)
