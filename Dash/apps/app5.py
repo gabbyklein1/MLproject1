@@ -6,6 +6,16 @@ from dash.dependencies import Input, Output
 from app import app
 
 
+future_work = '''
+Placeholder for the long talk on future work for this project. Should be a considerable amount of text.
+'''
+
+data_dictionary = '''
+Placeholder for the long text of the data dictionary. This will be a reaaaally long one, and I should learn how to format it as one big text chunk using markdown.
+'''
+
+
+
 
 SIDEBAR_STYLE = {"position": "fixed", "top": 0, "left": 0,"bottom": 0,
     "width": "16rem", "padding": "2rem 1rem"} #"background-color": "#f8f9fa",
@@ -30,40 +40,21 @@ sidebar = html.Div([
 )
 
 
-content = html.Div([
-    html.H3('App 5'),
-    dcc.Dropdown(
-        id='app-5-dropdown',
-        options=[
-            {'label': 'App 5 - {}'.format(i), 'value': i} for i in [
-                'Why?', 'Why Not?', 'Dummy or Smarty?'
-            ]
-        ]
-    ),
-    html.Div(id='app-5-display-value'),
-    dcc.Link('Go to App 1', href='/apps/app1')
-], style=CONTENT_STYLE)
 
 
-
-tab1_content = dbc.Card(
-dbc.CardBody(
-    [
-        html.P("This is tab 1!", className="card-text"),
-        dbc.Button("Click here", color="success"),
-    ]
-),
-className="mt-3", style=CONTENT_STYLE
+tab1_content = html.Div([
+    html.H2('Future Work', style={'textAlign': 'center'}),
+    dcc.Markdown(future_work)
+], style=CONTENT_STYLE
 )
 
 tab2_content = dbc.Card(
     dbc.CardBody(
         [
-            html.P("This is tab 2!", className="card-text"),
-            dbc.Button("Don't click here", color="danger"),
+            html.H2('Data Dictionary', style={'textAlign': 'center'}),
+            dcc.Markdown(data_dictionary)
         ]
-    ),
-    className="mt-3", style=CONTENT_STYLE
+    ), style=CONTENT_STYLE
 )
 
 
