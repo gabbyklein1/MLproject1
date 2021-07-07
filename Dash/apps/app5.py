@@ -10,7 +10,28 @@ import dash_table
 from app import app
 
 future_work = '''
-Placeholder for the long talk on future work for this project. Should be a considerable amount of text.
+---
+##### More Data:
+In general, machine learning models perform better the more high-quality data they have as inputs. With much 
+more data we would likely achieve higher performance from our models, and could even potentially use more 
+complicated models. A future path of investigation would be to source more data for our model training. To control 
+for changes in the housing market over time, we could use the value of the Case-Schiller HPI to adjust sales prices 
+to a reference year of our choosing. This would allow us to use more data while minimizing the error introduced 
+by using home sales prices at different points in time.\n
+---
+##### Domain Knowledge:
+To better inform our data processing and feature engineering processes, we really could have used more extensive 
+domain knowledge. By interviewing subject matter experts (real estate agents and home inspectors) we could learn 
+a lot more about what classes of our features could be grouped together to simplify our dataset. We could also 
+generate more, better-informed ideas to try in our feature engineering process.\n
+---
+##### Home Feature Quality Interactions:
+There are multiple features in our dataset that deeal with the quality of different home aspects (such as the 
+heating system, exterior materials, kitchen, and basement). While we did overall multicollinearity analysis 
+on our models and investigated the variance inflation factors for each, we did not conduct a correlation analysis 
+specifcally on the quality feaures for home aspects. It would be interesting to see if homes in general are in 
+overall good / overall poor condition, or if homes have a mix of quality ratings. On top of being an interesting 
+anaysis, the outcome could help influence future feature engineering work.
 '''
 
 
@@ -211,7 +232,7 @@ tab4_content = dbc.Card(
 tabs = dbc.Tabs(
     [
         dbc.Tab(tab1_content, label="Future Work"),
-        dbc.Tab(tab2_content, label="Data Dictionary"),
+        dbc.Tab(tab2_content, label="Intercept Analysis"),
         dbc.Tab(tab3_content, label="Original Data Set"),
         dbc.Tab(tab4_content, label='Transformed Data Set')
     ], style=CONTENT_STYLE

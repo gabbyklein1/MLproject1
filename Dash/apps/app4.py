@@ -74,6 +74,30 @@ Money invested in adding bathrooms after purchase is unlikely to be recouped at 
 '''
 
 
+remodeled_text = '''
+One question we had when reviewing the data was ‘how much value does remodeling add to your resale value’.\n
+In an attempt to answer it we decided to split the dataset- one containing the remodeled houses and one containing the unremodeled houses,
+and then using regression to explore the difference in coefficients. However, there is a clear confounding factor here, Age.
+Older homes are much more likely to have been remodeled. In order to control for this, we selected only houses built within
+a year range where there was a strong mixture of remodeled and unremodeled houses. We chose 1950-1999. Houses before 1950 were
+mostly 100% remodeled and in this year range, a consistent 30% had been remodeled and 70% were unremodeled. Running two simple regressions on
+each dataset to isolate the effect of year built in both the remodeled and unremodeled cases we obtained the following equations:
+The Remodeled Houses SLR Equation is:\n
+*SalePrice=140,060.3 + 1,913.6 Year After 1950*\n
+The Unremodeled Houses SLR Equation is:\n
+*SalePrice=117,752.01 + 1,892.37 Year After 1950*\n
+We can see there is a clear discrepancy of over $20k in base price for unremodeled versus remodeled houses of the same year.
+The effect of house age is slightly different between the two based on the coefficients however much less significantly than
+the base prices. We conclude based on this simple model that remodeled houses of the same year are worth about $20k more than
+their unremodeled counterparts and age has a similar effect on both groups.
+'''
+
+
+
+
+
+
+
 sidebar = html.Div([
         html.H2("Housing Prices in Ames, Iowa", style={'textAlign': 'center'}),
         html.Hr(),
@@ -135,8 +159,16 @@ def display_value(value):
         dcc.Graph(id='realt_map'))
     elif value=='tab-3':
         return (html.Div([
-        html.H3('Modeled Vs Not Remodeled Home Prices', style={'font-weight': 'bold'})]),
-        dcc.Markdown('''Content to be added'''),
+        html.H3('Research Questions', style={'font-weight': 'bold'})]),
+        dbc.Card(
+            dbc.CardBody([
+            html.H5('Remodeled vs Not Remodeled House Prices:'),
+            dbc.Row([
+            dbc.Col([dcc.Markdown(remodeled_text)]),
+            dbc.Col([html.Div([html.Img(src='/assets/Mod_vs_Remod.jpg')], style={'textAlign': 'center'})]),
+            ])
+            ]),
+        ),
         dbc.Card(
             dbc.CardBody([
                 html.H5('Kitchen Renovations:'),
