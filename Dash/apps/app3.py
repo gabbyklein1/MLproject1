@@ -107,7 +107,7 @@ tab2_content = html.Div([
                     id='GrLivArea-input',
                     placeholder='Enter a value (in sqft)...',
                     type='text',
-                    value='')
+                    value='1430')
                 ], style={'textAlign': 'center'}),
                 dbc.Col([html.Div('BedroomAbvGr'),
                 dcc.Slider(
@@ -116,14 +116,14 @@ tab2_content = html.Div([
                     max=10,
                     step=1,
                     marks={i: '{}'.format(i) for i in range(1,11)},
-                    value=2)  # Check average bedrooms count
+                    value=3)  # Check average bedrooms count
                 ], style={'textAlign': 'center'}),
                 dbc.Col([html.Div('Dist_From_UoI'),
                 dcc.Input(
                     id='Dist_From_UoI-input',
                     placeholder='Enter a value (in km)...',
                     type='text',
-                    value='')
+                    value='2.93')
                 ], style={'textAlign': 'center'}),
             ]),
             html.Hr(),
@@ -153,7 +153,7 @@ tab2_content = html.Div([
                     id='LotArea-input',
                     placeholder='Enter a value (in sqft)...',
                     type='text',
-                    value='')
+                    value='9500')
                 ], style={'textAlign': 'center'}),
             ]),
             html.Hr(),
@@ -216,7 +216,7 @@ tab2_content = html.Div([
                     id='YearBuilt-input',
                     placeholder='Enter a value...',
                     type='text',
-                    value='')
+                    value='1973')
                 ], style={'textAlign': 'center'}),
             ]),
             html.Hr(),
@@ -228,7 +228,7 @@ tab2_content = html.Div([
                     max=10,
                     step=1,
                     marks={i: '{}'.format(i) for i in range(1,11)},
-                    value=5) 
+                    value=6) 
                 ], style={'textAlign': 'center'}),
                 dbc.Col([html.Div('OverallCondBinary', style={'textAlign': 'center'}),
                 dcc.RadioItems(
@@ -279,7 +279,7 @@ tab2_content = html.Div([
                     id='RemodelYrsAftBuilt-input',
                     placeholder='Enter a value...',
                     type='text',
-                    value='')
+                    value='0')
                 ], style={'textAlign': 'center'}),
             ]),
             html.Hr(),
@@ -322,14 +322,14 @@ tab2_content = html.Div([
                     id='TotalBsmtSF-input',
                     placeholder='Enter a value...',
                     type='text',
-                    value='')
+                    value='960')
                 ], style={'textAlign': 'center'}),
                 dbc.Col([html.Div('BsmtUnfSF', style={'textAlign': 'center'}),
                 dcc.Input(
                     id='BsmtUnfSF-input',
                     placeholder='Enter a value...',
                     type='text',
-                    value='')
+                    value='450')
                 ], style={'textAlign': 'center'}),
                 dbc.Col([html.Div('BsmtFinGdLvng', style={'textAlign': 'center'}),
                 dcc.RadioItems(
@@ -369,7 +369,7 @@ tab2_content = html.Div([
                     id='GarageArea-input',
                     placeholder='Enter a value...',
                     type='text',
-                    value='')
+                    value='470')
                 ], style={'textAlign': 'center'}),
             ]),
             html.Hr(),

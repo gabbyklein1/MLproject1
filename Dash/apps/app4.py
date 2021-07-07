@@ -21,6 +21,35 @@ CONTENT_STYLE = {"margin-left": "18rem", "margin-right": "2rem", "padding": "2re
 Padded_STYLE = {"margin-left": "-1rem", "margin-right": "2rem","padding": "2rem 1rem",}
 
 
+kitchen_text = '''
+Kitchens are very expensive to remodel, so if a buyer is looking for an excellent-quality kitchen 
+it is recommended to purchase a home with one rather than planning to remodel an existing kitchen. 
+Online sources indicate a midrange kitchen renovation often totals $40,000 - $50,000. Our machine learning model 
+indicates homes in Ames with excellent kitchens command just a $24,300 premium, so it is cheaper to buy a 
+home with a high-quality kitchen than to upgrade one post-purchase. Also, it is recommended that sellers 
+avoid doing full kitchen renovations as it is unlikely they will recoup their investment.
+'''
+
+asbestos_text = '''
+Asbestos was a widely used house exterior material until the 1970's, when it was banned. 
+The negative health effects of asbestos are widely known, yet many homes still have their 
+original asbestos exteriors. It is not a serious health issue until the asbestos becomes cracked and 
+worn and fibers become airborne, but the shingles will eventually need to be replaced. It is an 
+expensive process requiring special safety gear and permitting. Our model indicates a $13,400 hit 
+to home resale value from having asbestos shingles rather than more typical vinyl siding or plywood 
+covering. The cost to both disposed of the asbestos and replace it with another exterior material is 
+likely to be significantly higher than this, so we recommend that buyers avoid homes with asbestos 
+siding and that sellers forego replacing it and sell their home as-is.
+'''
+
+bathroom_text = '''
+Available online sources indicate that the cost of adding a new bathroom to a home averages $10,000. 
+Given that our pricing algorithm does not increase in accuracy when including bathroom count, 
+it is not recommended that sellers add to the bathroom count of their home. It is, however, 
+recommended that buyers make sure to purchase a home with the number of bathrooms they desire. 
+Money invested in adding bathrooms after purchase is unlikely to be recouped at a future sale of the home.
+'''
+
 
 
 sidebar = html.Div([
@@ -100,7 +129,25 @@ def display_value(value):
     elif value=='tab-3':
         return (html.Div([
         html.H3('Modeled Vs Not Remodeled Home Prices', style={'font-weight': 'bold'})]),
-        dcc.Markdown('''Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added'''),
+        dcc.Markdown('''Content to be added'''),
+        dbc.Card(
+            dbc.CardBody([
+                html.H5('Kitchen Renovations:'),
+                dcc.Markdown(kitchen_text)
+                ]), 
+            ),
+        dbc.Card(
+            dbc.CardBody([
+                html.H5('Asbestos Shingles:'),
+                dcc.Markdown(asbestos_text)
+                ]), 
+            ),
+        dbc.Card(
+            dbc.CardBody([
+                html.H5('Bathrooms:'),
+                dcc.Markdown(bathroom_text)
+                ]), 
+            ),        
 
         )
         #dcc.Graph()
