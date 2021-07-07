@@ -10,6 +10,16 @@ import dash_table
 import sys
 from KNN_Funct import neighborhood_cluster
 
+
+knnsales_text = '''
+**Notes on Input Range**
+- Gross Living Area in our data set ranges from 334-4,316
+- Lot Area in our data set ranges from 1,470-215,245. The units are ambiguous.
+- Basement SF in our data set ranges from 0-3,206
+- Garage area in our data set ranges from 0-1,488
+'''
+
+
 clustertext='''### Analysis
 This graph gives a better understanding of similar neighborhoods in our Ames dataset. When selecting two clusters, we can see a distinct neighborhood in the mid right. Thats the North Ridge, Stone Bridge area. You can observe based on the Get to know Ames maps that these houses are new and expensive. This is clearly a fancier part of the town, the who's who of Ames, IA, if you will, which is what sets it so apart from other neighborhoods. \n\n
 When you increase to three clusters, we see Clear Creek neighborhood stands out in yellow. This neighborhood is interesting because we actually ended up dropping many houses from this neighborhood from our dataset. This was because many of them were more industrial used properties, ie agricultural etc, and were not useful in our model. This distinction is likely why it is set apart in our clustering. \n\n This continues as increasign the cluster numbers, next we see Timbers neighborhood broken out, then BrookDale. Ultimately after feeding these clusters into our stepwise model, we found the most informative was the North Ridge distinciton, as it remained non-zero after penalization.
@@ -33,7 +43,6 @@ SIDEBAR_STYLE = {"position": "fixed", "top": 0, "left": 0,"bottom": 0,
 
 CONTENT_STYLE = {"margin-left": "18rem", "margin-right": "2rem", "padding": "2rem 1rem",}
 Padded_STYLE = {"margin-left": "-1rem", "margin-right": "2rem","padding": "2rem 1rem",}
-
 
 kitchen_text = '''
 Kitchens are very expensive to remodel, so if a buyer is looking for an excellent-quality kitchen
@@ -63,7 +72,6 @@ it is not recommended that sellers add to the bathroom count of their home. It i
 recommended that buyers make sure to purchase a home with the number of bathrooms they desire.
 Money invested in adding bathrooms after purchase is unlikely to be recouped at a future sale of the home.
 '''
-
 
 
 sidebar = html.Div([
@@ -147,7 +155,7 @@ def display_value(value):
                 dcc.Markdown(bathroom_text)
                 ]),
             ),
-        
+
         )
     elif value=='tab-4':
         return (html.Div([
@@ -169,12 +177,16 @@ def display_value(value):
         dcc.Input(id='garageareaval',placeholder='Enter Garage Area',type='text',value=''),
         dcc.Input(id='latval',placeholder='Enter Latitude',type='text',value=''),
         dcc.Input(id='longval',placeholder='Enter Longitude',type='text',value=''),
+        dcc.Input(id='addval',placeholder='Enter Address',type='text',value=''),
         dbc.FormGroup([dbc.Label("Remodeled?"),
         dbc.RadioItems(options=[{"label": "True", "value": 1},{"label": "False", "value":0},],value=0,id="remodeledtf",inline=True)], style=Padded_STYLE),
         dcc.Input(id='milerad',placeholder='Enter radius to search (miles)',type='text',value=''),
+        dcc.Checklist(id='usedef',options=[{'label': 'Use Default Values?', 'value': 'def'}],value=['def']),
         html.Hr(),
         html.H3('Sales Comps'),
-        dash_table.DataTable(id='knn_table',columns=[{"name": i, "id": i} for i in knn_table_columns],style_cell=dict(textAlign='center')))
+        dash_table.DataTable(id='knn_table',columns=[{"name": i, "id": i} for i in knn_table_columns],style_cell=dict(textAlign='center')),
+        html.Hr(),
+        dcc.Markdown(knnsales_text))
 
 @app.callback(
     Output('realt_map', 'figure'),
@@ -206,8 +218,10 @@ def return_realt_map(colorvalue):
     Input('remodeledtf', 'value'),
     Input('latval', 'value'),
     Input('longval', 'value'),
-    Input('milerad', 'value')])
-def return_knn(valuegr,valuela,valuequality,valueyearbuilt,valuebsmtsf,valuegarage,valueremodeled,valuelat,valuelong,milerad):
+    Input('milerad', 'value'),
+    Input('addval', 'value'),
+    Input('usedef', 'value')])
+def return_knn(valuegr,valuela,valuequality,valueyearbuilt,valuebsmtsf,valuegarage,valueremodeled,valuelat,valuelong,milerad,addval,usedef):
     tdata=pd.read_csv('apps/data/Data_For_KNN_salescomps.csv')
     Miles=milerad
     numofneighbors=10
@@ -221,10 +235,18 @@ def return_knn(valuegr,valuela,valuequality,valueyearbuilt,valuebsmtsf,valuegara
     'TotalBsmtSF':valuebsmtsf,
     'GarageArea':valuegarage,'Lat':valuelat,'Long':valuelong,
     'Remodeled':bool(valueremodeled)}, index=[0])
-    # instance=pd.DataFrame({'GrLivArea':1786,   'LotArea':164660,  'OverallQual':5, 'YearBuilt':1965,
-    # 'TotalBsmtSF':1499,
-    # 'GarageArea':529,'Lat':41.99854744897959,'Long':-93.6589044489796,
-    # 'Remodeled':bool(0)}, index=[0])
+    if usedef==['def']:
+        instance=pd.DataFrame({'GrLivArea':1632,   'LotArea':250000,  'OverallQual':5, 'YearBuilt':1967,
+        'TotalBsmtSF':1632,
+        'GarageArea':576,'Lat':41.993081,'Long':-93.607439,
+        'Remodeled':bool(0),'Prop_Addr':'3310 OPAL DR 3312'}, index=[0])
+        Miles=2
+    else:
+        instance=pd.DataFrame({'GrLivArea':valuegr,   'LotArea':valuela,  'OverallQual':valuequality, 'YearBuilt':valueyearbuilt,
+        'TotalBsmtSF':valuebsmtsf,
+        'GarageArea':valuegarage,'Lat':valuelat,'Long':valuelong,
+        'Remodeled':bool(valueremodeled),'Prop_Addr':addval}, index=[0])
+        Miles=int(milerad)
     KNN_table=get_sales_comps(tdata,instance,Miles,numofneighbors,features=None)
     return KNN_table.to_dict('records')
 

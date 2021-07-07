@@ -11,9 +11,17 @@ from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 from scipy.cluster.hierarchy import dendrogram, linkage
 from scipy.cluster.hierarchy import fcluster
+from geopy import Nominatim
+from geopy.extra.rate_limiter import RateLimiter
+from geopy.distance import great_circle
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import gmplot
+
 
 def get_sales_comps(tdata,instance,Miles,numofneighbors,features=None,):
-    tdata = pd.read_csv('initial_condensed_data_TRAIN.csv')
+    tdata = pd.read_csv('apps/data/Data_For_KNN_salescomps.csv')
     #features to compare inst to other houses
     if features== None:
         features=['GrLivArea',  'LotArea',  'OverallQual', 'YearBuilt',
@@ -21,6 +29,14 @@ def get_sales_comps(tdata,instance,Miles,numofneighbors,features=None,):
        'GarageArea',
        'Remodeled']
 
+    def getlatlong(address):
+            locator = Nominatim(user_agent="myGeocoder")
+            address=address+', Ames, Iowa'
+
+            location = locator.geocode(address)
+            lat=location[1][0]
+            long=location[1][1]
+            return [lat,long]
 
     ## find people within x mis
     def houses_within_x_mi(tdata,instance,Miles):
@@ -28,6 +44,7 @@ def get_sales_comps(tdata,instance,Miles,numofneighbors,features=None,):
         tdata['Dist_from_Inst']=tdata.apply(lambda x: distance.distance([x.Lat,x.Long], instance_coords).miles,axis=1)
         return tdata[tdata.Dist_from_Inst<=Miles]
 
+    instance['Lat'],instance['Long']=getlatlong(instance.Prop_Addr[0])
     datasubset=houses_within_x_mi(tdata,instance,Miles)
     datasubsetSalePrices=datasubset.SalePrice
     instance=instance[features]
@@ -46,6 +63,7 @@ def get_sales_comps(tdata,instance,Miles,numofneighbors,features=None,):
     Sales_Comps=untransformed_data.iloc[ind.tolist()[0]]
     Sales_Comps['SalePrice']=datasubsetSalePrices.iloc[ind.tolist()[0]]
     return Sales_Comps
+
 
 
 

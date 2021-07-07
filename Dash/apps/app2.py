@@ -87,7 +87,7 @@ fig.update_layout(mapbox_style="open-street-map")
 fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
 
-model_table=pd.DataFrame({'Model':['Lasso','Stepwise','Random Forest','SVR'],'Features Used':['69','33','Tree','101'],'Train R2':['.9093','.9246','Tree','.9516'],'Test R2':['.9222','.9176','Tree','.9483']},index=['Lasso','Stepwise','Random Forest','SVM'])
+model_table=pd.DataFrame({'Model':['Lasso','Stepwise','Random Forest','SVR'],'Features Used':['69','33','86','101'],'Train R2':['.9093','.9246','.9085','.9516'],'Test R2':['.9222','.9176','.9071','.9483']},index=['Lasso','Stepwise','Random Forest','SVM'])
 
 
 
