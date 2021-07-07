@@ -18,9 +18,10 @@ Placeholder for the long text of the data dictionary. This will be a reaaaally l
 format it as one big text chunk using markdown.
 '''
 
-df1 = pd.read_csv('merge_data_update.csv', index_col=0)
+df1 = pd.read_csv('apps/data/merge_data_update.csv', index_col=0)
 
-df2 = pd.read_csv('RowFiltered_condensed_data_TRAIN.csv', index_col=False)
+df2 = pd.read_csv('apps/data/RowFiltered_condensed_data_TRAIN_subsect.csv', index_col=False)
+df3 = pd.read_csv('apps/data/RowFiltered_condensed_data_TRAIN.csv', index_col=False)
 
 
 SIDEBAR_STYLE = {"position": "fixed", "top": 0, "left": 0,"bottom": 0,
@@ -75,14 +76,9 @@ tab3_content = dbc.Card(
     dbc.CardBody([
 
             html.H2('Original Data Set', style={'textAlighn': 'center'}),
-        dash_table.DataTable(
-            id='Original Data Set',
-            columns=[{'name': i, 'id': i} for i in df1.columns],
-            data=df1.to_dict('records'),
-            page_action='none',
-            style_table={'height': '300px', 'overflowY': 'auto'}
+            html.Div(
+    [html.Button("Download Data", id="btn_txt"), dcc.Download(id="download-text")]),
 
-        )
     ]), style=CONTENT_STYLE
 )
 
@@ -99,7 +95,8 @@ tab4_content = dbc.Card(
             page_action='none',
             style_table={'height': '300px', 'overflowY': 'auto'}
 
-        )
+        ),html.Div(
+        [html.Button("Download Data", id="btn_txt_rowfilt"), dcc.Download(id="download-text_rowfilt")])
     ]), style=CONTENT_STYLE
 )
 
@@ -118,9 +115,24 @@ tabs = dbc.Tabs(
 
 layout = html.Div([sidebar, tabs])
 
+@app.callback(
+    Output("download-text", "data"),
+    Input("btn_txt", "n_clicks"),
+    prevent_initial_call=True,
+)
+def func(n_clicks):
+    return dcc.send_data_frame(df1.to_csv, "AmesIowadf.csv")
 
 @app.callback(
     Output('app-5-display-value', 'children'),
     Input('app-5-dropdown', 'value'))
 def display_value(value):
     return 'You have selected "{}"'.format(value)
+
+@app.callback(
+    Output("download-text_rowfilt", "data"),
+    Input("btn_txt_rowfilt", "n_clicks"),
+    prevent_initial_call=True,
+)
+def func(n_clicks):
+    return dcc.send_data_frame(df3.to_csv, "AmesIowadf_rowfilt.csv")
