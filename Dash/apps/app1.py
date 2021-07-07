@@ -41,7 +41,10 @@ dictionary for reference.
 '''
 
 
-## Start Here
+
+
+
+
 
 
 SIDEBAR_STYLE = {"position": "fixed", "top": 0, "left": 0,"bottom": 0,
@@ -67,10 +70,6 @@ sidebar = html.Div([
 )
 
 
-
-## Content is your new 'layout'
-
-
 content = html.Div([
     html.H3('Pricing Homes in Ames, Iowa using Machine Learning'),
     html.P(intro_text),
@@ -93,17 +92,8 @@ content = html.Div([
             ]),
     html.Hr(),
     html.H3('Layout of the App'),
-    dcc.Markdown(organize_text)#,
-    # dcc.Dropdown(
-    #     id='app-1-dropdown',
-    #     options=[
-    #         {'label': 'App 1 - {}'.format(i), 'value': i} for i in [
-    #             'NYC', 'MTL', 'LA'
-    #         ]
-    #     ]
-    # ),
-    # html.Div(id='app-1-display-value'),
-    # dcc.Link('Go to App 2', href='/apps/app2')
+    dcc.Markdown(organize_text),
+
 ], style=CONTENT_STYLE)
 
 
@@ -114,9 +104,3 @@ layout = html.Div([sidebar, content])
 
 
 
-
-# @app.callback(
-#     Output('app-1-display-value', 'children'),
-#     Input('app-1-dropdown', 'value'))
-# def display_value(value):
-#     return 'You have selected "{}"'.format(value)
