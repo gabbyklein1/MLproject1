@@ -59,6 +59,21 @@ content = html.Div([
 
 layout = html.Div([sidebar, content])
 
+#df1 = pd.read_csv('NotRemodeledHouses_for_dash')
+#df2 = pd.read_csv('RemodeledHouses_for_dash')
+#fig = make_subplots()
+#fig.add_trace(px.scatter(df1, x='YearBuilt', y='SalePrice'))
+#fig.add_trace(px.scatter(df2, x='YearBuilt', y='SalePrice'))
+
+
+
+
+
+
+#px.scatter(df1, x='YearBuilt', y='SalePrice')
+#fig.add_trace(px.scatter(df2, x='YearBuilt', y='SalePrice'))
+
+
 
 @app.callback(
     Output('app-4-display-value', 'children'),
@@ -82,6 +97,13 @@ def display_value(value):
         html.Div([
         dcc.Dropdown(id='dropdown_for_realt_map',options=[{'label': 'Year Built','value': 'YearBuilt'},{'label': 'Gross Living Area', 'value': 'GrLivArea'} ,{'label': 'Sale Price','value': 'SalePrice'},{'label': 'Neighborhood','value': 'Neighborhood'},{'label': 'Overall Quality','value': 'OverallQual'}],value='colorvalue')]),
         dcc.Graph(id='realt_map'))
+    elif value=='tab-3':
+        return (html.Div([
+        html.H3('Modeled Vs Not Remodeled Home Prices', style={'font-weight': 'bold'})]),
+        dcc.Markdown('''Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added Content to be added'''),
+
+        )
+        #dcc.Graph()
     elif value=='tab-5':
         return (html.Div([
         html.H3('KNN Sales Comps', style={'font-weight': 'bold'})]),

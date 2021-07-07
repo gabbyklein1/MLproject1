@@ -2,6 +2,7 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 import pandas as pd
+import plotly.express as px
 from dash.dependencies import Input, Output
 
 import dash_table
@@ -13,13 +14,13 @@ Placeholder for the long talk on future work for this project. Should be a consi
 '''
 
 data_dictionary = '''
-Placeholder for the long text of the data dictionary. This will be a reaaaally long one, and I should learn how to 
+Placeholder for the long text of the data dictionary. This will be a reaaaally long one, and I should learn how to
 format it as one big text chunk using markdown.
 '''
 
 df1 = pd.read_csv('merge_data_update.csv', index_col=0)
 
-df2 = pd.read_csv('RowFiltered_condensed_data_TRAIN.csv', index_col=0)
+df2 = pd.read_csv('RowFiltered_condensed_data_TRAIN.csv', index_col=False)
 
 
 SIDEBAR_STYLE = {"position": "fixed", "top": 0, "left": 0,"bottom": 0,
@@ -29,11 +30,11 @@ SIDEBAR_STYLE = {"position": "fixed", "top": 0, "left": 0,"bottom": 0,
 CONTENT_STYLE = {"margin-left": "18rem", "margin-right": "2rem", "padding": "2rem 1rem",}
 
 sidebar = html.Div([
-        html.H2("Housing Prices in Ames, Iowa", style={'textAlign': 'center'}), 
+        html.H2("Housing Prices in Ames, Iowa", style={'textAlign': 'center'}),
         html.Hr(),
         dbc.Nav(
             [
-                dbc.NavLink("Introduction", href="/apps/app1", active="exact"), 
+                dbc.NavLink("Introduction", href="/apps/app1", active="exact"),
                 dbc.NavLink("Project", href="/apps/app2", active="exact"),
                 dbc.NavLink("Pricing Model", href="/apps/app3", active="exact"),
                 dbc.NavLink("Real Estate Handbook", href="/apps/app4", active="exact"),
