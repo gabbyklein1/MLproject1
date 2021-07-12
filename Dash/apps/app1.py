@@ -81,7 +81,7 @@ content = html.Div([
     dbc.Row(
             [
                 dbc.Col([html.Div([html.B("Gabby Klein")], style={'textAlign': 'center'}),
-                html.Div([html.Img(src='/assets/Gabby_pic.jpg')], style={'textAlign': 'center'}),
+                html.Div([html.Img(src='/assets/Gabby_pic1.jpg',style={'height':'89%', 'width':'89%'})], style={'textAlign': 'center'}),
                 html.P(gabby_bio)
                 ]),
                 dbc.Col([html.Div([html.B("Aditya Jayasuri")], style={'textAlign': 'center'}),
