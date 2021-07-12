@@ -36,7 +36,7 @@ and age of the home. \n
 
 \nThe model resulted in a test R^2 of 0.920 and a residual standard error of $19,390. 
 While this error is very large compared to the average profit per house estimate of 1.3% in instant 
-homebuying programs, we assume this would add variance to our per-home profit and not result in systematic 
+home buying programs, we assume this would add variance to our per-home profit and not result in systematic 
 mispricing. Future collection of more home sale records in Ames would likely reduce our residual 
 standard error significantly, resulting in an even more accurate model.
 

@@ -26,13 +26,7 @@ a lot more about what classes of our features could be grouped together to simpl
 generate more, better-informed ideas to try in our feature engineering process.\n
 ---
 ##### Home Feature Quality Interactions:
-There are multiple features in our dataset that deeal with the quality of different home aspects (such as the 
-heating system, exterior materials, kitchen, and basement). While we did overall multicollinearity analysis 
-on our models and investigated the variance inflation factors for each, we did not conduct a correlation analysis 
-specifcally on the quality feaures for home aspects. It would be interesting to see if homes in general are in 
-overall good / overall poor condition, or if homes have a mix of quality ratings. On top of being an interesting 
-anaysis, the outcome could help influence future feature engineering work.
-'''
+There are multiple features in our dataset that deal with the quality of different home aspects (such as the heating system, exterior materials, kitchen, and basement). While we did overall multicollinearity analysis on our models and investigated the variance inflation factors for each, we did not conduct a correlation analysis specifically on the quality features for home aspects. It would be interesting to see if homes in general are in overall good / overall poor condition, or if homes have a mix of quality ratings. On top of being an interesting analysis, the outcome could help influence future feature engineering work.'''
 
 
 ml_intercept_text = '''

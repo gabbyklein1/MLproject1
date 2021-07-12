@@ -22,7 +22,7 @@ background in launching a career in data science. She loves a good math puzzle w
 
 
 jude_bio = '''
-Data Science Fellow at NYC Data Science Academy, Drexel University Alumnus.
+Aditya is a Data Science Fellow at NYC Data Science Academy with hopes of paving a new pathway in his career journey. A graduate from Drexel University with a B.S. in Entertainment & Arts Management. Previous experience includes working in marketing and promotions at Entercom Communication in NYC. With a new horizon in sight, Aditya looks forward to creating a name for himself as a Data Scientist.
 '''
 
 ryan_bio = '''
@@ -84,7 +84,7 @@ content = html.Div([
                 html.Div([html.Img(src='/assets/Gabby_pic.jpg')], style={'textAlign': 'center'}),
                 html.P(gabby_bio)
                 ]),
-                dbc.Col([html.Div([html.B("Jude Jayasuri")], style={'textAlign': 'center'}),
+                dbc.Col([html.Div([html.B("Aditya Jayasuri")], style={'textAlign': 'center'}),
                 html.Div([html.Img(src='/assets/Jude_pic.jpg')],style={'textAlign': 'center'}),
                 html.P(jude_bio)
                 ]),

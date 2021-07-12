@@ -60,7 +60,7 @@ original asbestos exteriors. It is not a serious health issue until the asbestos
 worn and fibers become airborne, but the shingles will eventually need to be replaced. It is an
 expensive process requiring special safety gear and permitting. Our model indicates a $13,400 hit
 to home resale value from having asbestos shingles rather than more typical vinyl siding or plywood
-covering. The cost to both disposed of the asbestos and replace it with another exterior material is
+covering. The cost to both dispose of the asbestos and replace it with another exterior material is
 likely to be significantly higher than this, so we recommend that buyers avoid homes with asbestos
 siding and that sellers forego replacing it and sell their home as-is.
 '''
